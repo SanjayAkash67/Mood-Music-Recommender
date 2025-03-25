@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Music Recommender</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        spotify: {
+                            green: '#1DB954',
+                            black: '#121212',
+                            darkgray: '#181818',
+                            lightgray: '#282828'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="min-h-screen">
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle">
+        <button class="btn btn-outline-spotify" onclick="toggleTheme()">
+            <i class="fas fa-moon dark:hidden"></i>
+            <i class="fas fa-sun hidden dark:block"></i>
+        </button>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark py-3 sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fa-brands fa-spotify text-spotify-green me-2 fa-lg"></i>
+                <span>Mood Based Music Recommender</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 pt-3 pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <!-- Header -->
+                <div class="text-center mb-5 animate-fade-in">
+                    <h1 class="display-4 fw-bold mb-3">Find Your Perfect <span class="text-spotify-green">Mood</span> Playlist</h1>
+                    <p class="lead opacity-75 mb-4">Tell us how you're feeling, and we'll match you with the perfect Spotify tracks</p>
+                </div>
+
+                <!-- Input Form -->
+                <div class="mb-5 animate-fade-in" style="animation-delay: 0.1s;">
+                    <div class="input-container">
+                        <textarea class="form-control shadow-sm" id="userInput" rows="3" placeholder="I'm feeling energetic and ready to dance..."></textarea>
+                    </div>
+                    <button id="recommendButton" class="btn btn-spotify w-100" onclick="getRecommendations()">
+                        <i class="fa-solid fa-music me-2"></i> Get My Recommendations
+                    </button>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="loading-container my-5 d-none">
+                    <div class="spinner">
+                        <div class="spinner-dot"></div>
+                    </div>
+                    <p class="text-center opacity-75">Finding your perfect tracks...</p>
+                </div>
+
+                <!-- Results Container -->
+                <div id="results" class="mt-4 animate-fade-in" style="animation-delay: 0.2s;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-auto">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <small class="opacity-75">© Mood Matcher</small>
+                </div>
+                <div class="col-auto">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq4QqCgGn" crossorigin="anonymous"></script>
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            if (document.body.getAttribute('data-theme') === 'light') {
+                document.body.removeAttribute('data-theme'); // Switch to dark theme
+            } else {
+                document.body.setAttribute('data-theme', 'light'); // Switch to light theme
+            }
+            const themeIcon = document.querySelector('.theme-toggle .fas');
+            if (document.body.getAttribute('data-theme') === 'light') {
+                document.querySelector('.fa-moon').classList.add('hidden');
+                document.querySelector('.fa-sun').classList.remove('hidden');
+            } else {
+                document.querySelector('.fa-moon').classList.remove('hidden');
+                document.querySelector('.fa-sun').classList.add('hidden');
+            }
+        }
+
+        // Get recommendations
+        async function getRecommendations() {
+            const text = document.getElementById("userInput").value;
+            const resultDiv = document.getElementById("results");
+            const loadingDiv = document.getElementById("loading");
+            const recommendButton = document.getElementById("recommendButton");
+
+            // Show loading state
+            resultDiv.innerHTML = "";
+            loadingDiv.classList.remove("d-none");
+            recommendButton.disabled = true;
+            recommendButton.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Finding tracks...';
+
+            if (!text) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        Please tell us how you're feeling!
+                    </div>`;
+                loadingDiv.classList.add("d-none");
+                recommendButton.disabled = false;
+                recommendButton.innerHTML = '<i class="fa-solid fa-music me-2"></i> Get My Spotify Recommendations';
+                return;
+            }
+
+            try {
+                const response = await fetch("/recommend", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await response.json();
+
+                // Hide loading
+                loadingDiv.classList.add("d-none");
+                recommendButton.disabled = false;
+                recommendButton.innerHTML = '<i class="fa-solid fa-music me-2"></i> Get My Spotify Recommendations';
+
+                if (data.error) {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            ${data.error}
+                        </div>`;
+                    return;
+                }
+
+                // Build header with mood
+                let resultsHTML = `
+                    <div class="text-center mb-4">
+                        <div class="mood-badge mb-2">${data.mood}</div>
+                        <h2 class="fw-bold mb-3">Here's Your Perfect Mood Playlist</h2>
+                        <p class="text-muted">Based on your current ${data.mood} mood, we've picked these tracks for you</p>
+                    </div>`;
+
+                // Grid layout for song cards
+                resultsHTML += `<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">`;
+
+                data.songs.forEach(song => {
+                    resultsHTML += `
+                        <div class="col animate-fade-in" style="animation-delay: ${Math.random() * 0.5}s;">
+                            <div class="song-card h-100">
+                                <div class="p-3">
+                                    <div class="song-image-container mb-3">
+                                        <img src="${song.album_image || '{{ url_for("static", filename="placeholder.png") }}'}"
+                                             class="song-image" alt="${song.name}">
+                                    </div>
+                                    <h5 class="song-title">${song.name}</h5>
+                                    <p class="song-artist">${song.artist}</p>
+                                    <a href="${song.url}" target="_blank" class="btn btn-outline-spotify play-button">
+                                        <i class="fa-solid fa-play"></i>
+                                        Play on Spotify
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                resultsHTML += `</div>`;
+                resultDiv.innerHTML = resultsHTML;
+            } catch (error) {
+                loadingDiv.classList.add("d-none");
+                recommendButton.disabled = false;
+                recommendButton.innerHTML = '<i class="fa-solid fa-music me-2"></i> Get My Spotify Recommendations';
+
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        Something went wrong. Please try again.
+                    </div>`;
+            }
+        }
+
+        // Add enter key support
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                getRecommendations();
+            }
+        });
+    </script>
+</body>
+</html>

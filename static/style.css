@@ -1,0 +1,473 @@
+/* static/style.css */
+
+/* Custom styles to complement Bootstrap and Tailwind CSS */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Base Spotify colors */
+  --spotify-green: #1DB954;
+  --spotify-green-hover: #18a349;
+
+  /* Dark theme colors */
+  --bg-gradient-from: #121212;
+  --bg-gradient-to: #181818;
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --card-bg: rgba(255, 255, 255, 0.07);
+  --card-bg-hover: rgba(255, 255, 255, 0.12);
+  --input-bg: rgba(255, 255, 255, 0.1);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus-bg: rgba(255, 255, 255, 0.15);
+  --scrollbar-track: rgba(255, 255, 255, 0.05);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+
+  /* Font family variables */
+  --font-primary: 'Montserrat', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-secondary: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Transition speeds */
+  --transition-fast: 0.2s;
+  --transition-medium: 0.3s;
+  --transition-slow: 0.5s;
+}
+
+/* Light theme variables */
+body[data-theme="light"] {
+  --bg-gradient-from: #F5F5F5;
+  --bg-gradient-to: #FFFFFF;
+  --text-primary: #333333;
+  --text-secondary: rgba(0, 0, 0, 0.6);
+  --card-bg: rgba(0, 0, 0, 0.04);
+  --card-bg-hover: rgba(0, 0, 0, 0.07);
+  --input-bg: rgba(0, 0, 0, 0.05);
+  --input-border: rgba(0, 0, 0, 0.1);
+  --input-focus-bg: rgba(0, 0, 0, 0.07);
+  --scrollbar-track: rgba(0, 0, 0, 0.05);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg-gradient-from), var(--bg-gradient-to));
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  transition: background var(--transition-medium) ease-in-out,
+              color var(--transition-medium) ease-in-out;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Enhanced Font Typography */
+h1, h2, h3, .display-4 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.lead, p, .form-control {
+  font-family: var(--font-secondary);
+}
+
+.btn, .mood-badge {
+  font-family: var(--font-primary);
+  letter-spacing: 0.25px;
+}
+
+/* Header & Logo */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.navbar-dark {
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 999; /* Ensure navbar is below theme toggle if needed */
+}
+
+body[data-theme="light"] .navbar-dark {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+/* Enhanced Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000; /* Higher z-index to stay on top */
+}
+
+.theme-toggle-btn {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: background-color var(--transition-fast) ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme="light"] .theme-toggle-btn {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme="light"] .theme-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.theme-toggle-btn i {
+  font-size: 1.2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity var(--transition-fast) ease,
+              transform var(--transition-fast) ease;
+}
+
+.dark-icon, .light-icon {
+  opacity: 1;
+}
+
+.hidden {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5);
+}
+
+/* Ripple Effect for Theme Toggle Button */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Buttons */
+.btn-spotify {
+  background-color: var(--spotify-green);
+  border-color: var(--spotify-green);
+  color: white;
+  font-weight: 600;
+  border-radius: 500px;
+  padding: 0.5rem 2rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-spotify:hover, .btn-spotify:focus, .btn-spotify:active {
+  background-color: var(--spotify-green-hover) !important;
+  border-color: var(--spotify-green-hover) !important;
+  transform: scale(1.02);
+  box-shadow: 0px 5px 15px rgba(29, 185, 84, 0.4) !important;
+}
+
+.btn-outline-spotify {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+  border-radius: 500px;
+  padding: 0.5rem 1.5rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-outline-spotify:hover {
+  background-color: var(--text-primary);
+  color: var(--bg-gradient-from);
+  transform: scale(1.02);
+}
+
+body[data-theme="light"] .btn-outline-spotify {
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+body[data-theme="light"] .btn-outline-spotify:hover {
+  background-color: var(--text-primary);
+  color: var(--bg-gradient-from);
+  transform: scale(1.02);
+}
+
+
+/* Mood Text */
+.mood-badge {
+  background-color: var(--spotify-green);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 500px;
+  text-transform: uppercase;
+  display: inline-block;
+  letter-spacing: 1px;
+}
+
+/* User Input */
+.input-container {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.input-container textarea {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all var(--transition-medium);
+}
+
+.input-container textarea:focus {
+  background-color: var(--input-focus-bg);
+  border-color: var(--spotify-green);
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.25);
+  outline: none;
+}
+
+body[data-theme="light"] .input-container textarea {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+}
+
+body[data-theme="light"] .input-container textarea:focus {
+  background-color: var(--input-focus-bg);
+  border-color: var(--spotify-green);
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.25);
+  outline: none;
+}
+
+
+/* Song Cards */
+.song-card {
+  background: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform var(--transition-medium) ease,
+             background-color var(--transition-medium) ease;
+  border: none;
+}
+
+.song-card:hover {
+  background: var(--card-bg-hover);
+  transform: translateY(-5px);
+}
+body[data-theme="light"] .song-card {
+    background: var(--card-bg);
+}
+body[data-theme="light"] .song-card:hover {
+    background: var(--card-bg-hover);
+    transform: translateY(-5px);
+}
+
+
+.song-image {
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform var(--transition-medium) ease;
+}
+
+.song-card:hover .song-image {
+  transform: scale(1.03);
+}
+
+.song-title {
+  color: inherit;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body[data-theme="light"] .song-artist {
+    color: var(--text-secondary);
+}
+
+.play-button {
+  border-radius: 500px;
+  padding: 0.375rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  transition: all var(--transition-fast) ease;
+}
+
+.play-button:hover {
+  transform: scale(1.05);
+}
+
+.play-button svg {
+  margin-right: 0.5rem;
+}
+
+/* Loading Animation */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1rem;
+}
+
+.spinner-dot {
+  background-color: var(--spotify-green);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Error Styles */
+.error {
+  color: #ff5b5b;
+  background-color: rgba(255, 91, 91, 0.1);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
+
+.error svg {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+body[data-theme="light"] .error {
+    color: #ff5b5b;
+}
+
+
+/* Responsive Adaptations */
+@media (max-width: 768px) {
+  .song-card {
+    margin-bottom: 1rem;
+  }
+
+  .btn-spotify {
+    width: 100%;
+  }
+
+  .song-image-container {
+    max-width: 100px;
+    margin: 0 auto;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+body[data-theme="light"] ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+body[data-theme="light"] ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+body[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+
+/* Footer styling */
+footer {
+  margin-top: auto;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: background-color var(--transition-medium) ease;
+}
+
+body[data-theme="light"] footer {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Add font preloading for performance */
+@media screen and (min-width: 1200px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
